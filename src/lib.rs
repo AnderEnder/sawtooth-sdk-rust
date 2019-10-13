@@ -15,7 +15,6 @@
  * ------------------------------------------------------------------------------
  */
 
-extern crate crypto;
 extern crate hex;
 extern crate libc;
 #[macro_use]
@@ -24,6 +23,7 @@ extern crate log;
 extern crate openssl;
 extern crate protobuf;
 extern crate rand;
+extern crate ring;
 extern crate secp256k1;
 extern crate uuid;
 extern crate zmq;

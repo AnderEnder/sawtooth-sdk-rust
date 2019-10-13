@@ -14,8 +14,8 @@
  * limitations under the License.
  * ------------------------------------------------------------------------------
  */
-use crypto::digest::Digest;
-use crypto::sha2::Sha256;
+use ring::digest;
+
 #[cfg(feature = "pem")]
 use openssl::{
     bn::{BigNum, BigNumContext},
@@ -161,10 +161,8 @@ impl Context for Secp256k1Context {
     }
 
     fn sign(&self, message: &[u8], key: &dyn PrivateKey) -> Result<String, Error> {
-        let mut sha = Sha256::new();
-        sha.input(message);
-        let hash: &mut [u8] = &mut [0; 32];
-        sha.result(hash);
+        let sha = digest::digest(&digest::SHA256, message);
+        let hash = sha.as_ref();
 
         let sk = secp256k1::key::SecretKey::from_slice(&self.context, key.as_slice())?;
         let sig = self
@@ -179,10 +177,8 @@ impl Context for Secp256k1Context {
     }
 
     fn verify(&self, signature: &str, message: &[u8], key: &dyn PublicKey) -> Result<bool, Error> {
-        let mut sha = Sha256::new();
-        sha.input(message);
-        let hash: &mut [u8] = &mut [0; 32];
-        sha.result(hash);
+        let sha = digest::digest(&digest::SHA256, message);
+        let hash = sha.as_ref();
 
         let result = self.context.verify(
             &secp256k1::Message::from_slice(hash)?,
